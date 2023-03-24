@@ -1,0 +1,9 @@
+dist
+node_modules
+public
+package.json
+yarn.lock
+tsconfig.json
+tsconfig.*.json
+vite.config.ts
+*.svg
