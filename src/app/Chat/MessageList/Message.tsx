@@ -1,16 +1,13 @@
-import { ReactComponent as CheckCircle } from '@/assets/icons/check-circle.svg';
-import { ReactComponent as ExclamationCircle } from '@/assets/icons/exclamation-circle.svg';
 import { MessageEnum } from '@/libs/api/generated/graphql';
 import moment from 'moment';
 import { memo } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { Avatar } from '../common';
+import { Avatar } from '../../common';
+import MessageStatus, { MessageStatusProps } from './MessageStatus';
 
-interface MessageProps extends MessageEnum {
+export interface MessageProps extends MessageEnum, MessageStatusProps {
 	userType: 'me' | 'other';
 	userAvatar?: string;
-	failed?: boolean;
-	loading?: boolean;
 }
 
 const Message: React.FC<MessageProps> = ({
@@ -19,8 +16,8 @@ const Message: React.FC<MessageProps> = ({
 	userId,
 	text,
 	datetime,
-	failed,
-	loading,
+	status,
+	onRetry,
 }) => {
 	const isMe = userType === 'me';
 
@@ -59,11 +56,7 @@ const Message: React.FC<MessageProps> = ({
 					)}
 				>
 					<p className='text-xs text-gray-500'>{moment(datetime).format('HH:mm')}</p>
-					{isMe && (
-						<p className='text-xs text-gray-500'>
-							{failed && !loading ? <ExclamationCircle /> : <CheckCircle />}
-						</p>
-					)}
+					{isMe && <MessageStatus {...{ status, onRetry }} />}
 				</div>
 			</div>
 		</div>

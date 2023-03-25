@@ -5,6 +5,7 @@ export const ADD_MESSAGE = gql(/* GraphQL */ `
 		MessagePost(channelId: $channelId, text: $text, userId: $userId) {
 			messageId
 			text
+			datetime
 			userId
 		}
 	}

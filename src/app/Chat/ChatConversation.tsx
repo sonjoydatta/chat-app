@@ -1,8 +1,31 @@
+import { useScroll } from '@/libs/hooks';
+import { useState } from 'react';
 import { useChatContext } from './ChatContext';
+import { useGetLatestMessages, useGetMoreMessages } from './hooks';
+import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
 const ChatConversation = () => {
-	const { channelId } = useChatContext();
+	const [isBtnVisible, setBtnVisible] = useState({ prev: true, next: true });
+	const { userId, channelId, messages, setMessages } = useChatContext();
+	const { elementRef, scrollToBottom, scrollToTop } = useScroll();
+
+	// Fetch latest messages
+	const { loading } = useGetLatestMessages({
+		channelId,
+		setMessages,
+		scrollToBottom,
+	});
+
+	// Fetch more messages
+	const handleReadMore = useGetMoreMessages({
+		channelId,
+		messages,
+		setMessages,
+		setBtnVisible,
+		scrollToTop,
+		scrollToBottom,
+	});
 
 	return (
 		<div className='flex flex-col w-full h-full'>
@@ -10,18 +33,29 @@ const ChatConversation = () => {
 				<p>{channelId} Channel</p>
 			</div>
 
-			{/* Conversations  */}
-			<MessageList />
-
-			{/* Input */}
-			<div className='flex flex-row items-center border-t'>
-				<input
-					type='text'
-					className='flex-1 px-4 py-2 text-sm text-gray-500 placeholder-gray-500 border-none focus:outline-none'
-					placeholder='Type a message'
+			<MessageList ref={elementRef} loading={loading} empty={messages?.length < 1}>
+				<MessageList.LoadMore
+					next={true}
+					visible={isBtnVisible.next}
+					onClick={() => handleReadMore(false)}
 				/>
-				<button className='flex items-center justify-center w-12 h-12 text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 focus:outline-none'></button>
-			</div>
+				{messages.map((message) => (
+					<MessageList.Item
+						key={message.messageId}
+						{...{
+							...message,
+							userType: message.userId === userId ? 'me' : 'other',
+						}}
+					/>
+				))}
+				<MessageList.LoadMore
+					next={false}
+					visible={isBtnVisible.prev}
+					onClick={() => handleReadMore(true)}
+				/>
+			</MessageList>
+
+			<MessageInput />
 		</div>
 	);
 };

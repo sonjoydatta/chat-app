@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n\tmutation MessagePost($channelId: ChannelId!, $text: String!, $userId: UserId!) {\n\t\tMessagePost(channelId: $channelId, text: $text, userId: $userId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tuserId\n\t\t}\n\t}\n": types.MessagePostDocument,
+    "\n\tmutation MessagePost($channelId: ChannelId!, $text: String!, $userId: UserId!) {\n\t\tMessagePost(channelId: $channelId, text: $text, userId: $userId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tdatetime\n\t\t\tuserId\n\t\t}\n\t}\n": types.MessagePostDocument,
     "\n\tquery MessagesFetchLatest($channelId: ChannelId!) {\n\t\tMessagesFetchLatest(channelId: $channelId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tdatetime\n\t\t\tuserId\n\t\t}\n\t}\n": types.MessagesFetchLatestDocument,
     "\n\tquery MessagesFetchMore($channelId: ChannelId!, $messageId: String!, $old: Boolean!) {\n\t\tMessagesFetchMore(channelId: $channelId, messageId: $messageId, old: $old) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tdatetime\n\t\t\tuserId\n\t\t}\n\t}\n": types.MessagesFetchMoreDocument,
 };
@@ -35,7 +35,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tmutation MessagePost($channelId: ChannelId!, $text: String!, $userId: UserId!) {\n\t\tMessagePost(channelId: $channelId, text: $text, userId: $userId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tuserId\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation MessagePost($channelId: ChannelId!, $text: String!, $userId: UserId!) {\n\t\tMessagePost(channelId: $channelId, text: $text, userId: $userId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tuserId\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tmutation MessagePost($channelId: ChannelId!, $text: String!, $userId: UserId!) {\n\t\tMessagePost(channelId: $channelId, text: $text, userId: $userId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tdatetime\n\t\t\tuserId\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation MessagePost($channelId: ChannelId!, $text: String!, $userId: UserId!) {\n\t\tMessagePost(channelId: $channelId, text: $text, userId: $userId) {\n\t\t\tmessageId\n\t\t\ttext\n\t\t\tdatetime\n\t\t\tuserId\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

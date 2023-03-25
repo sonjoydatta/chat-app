@@ -32,6 +32,7 @@ const ChatSidebar = () => {
 					onChange={(e) => setUserId(e.target.value as UserId)}
 				/>
 			</div>
+
 			<div className='flex flex-col'>
 				<p className='mb-2'>2. Choose your channel</p>
 				<ul className='flex flex-col gap-2'>

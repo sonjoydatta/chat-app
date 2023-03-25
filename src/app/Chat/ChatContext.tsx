@@ -1,13 +1,25 @@
 import { ChannelId, MessageEnum, UserId } from '@/libs/api/generated/graphql';
 import { createContext, useContext, useState } from 'react';
 
-type ChatContextType = {
+enum MessageStatus {
+	Sending = 'sending',
+	Failed = 'failed',
+	Sent = 'sent',
+}
+
+interface IMessageEnum extends MessageEnum {
+	status?: MessageStatus;
+}
+
+export type ChatContextType = {
 	userId: UserId;
 	channelId: ChannelId;
-	messages: MessageEnum[];
+	messages: IMessageEnum[];
 	setUserId: (userId: UserId) => void;
 	setChannelId: (channelId: ChannelId) => void;
-	setMessages: (messages: MessageEnum | MessageEnum[], old?: boolean) => void;
+	setMessages: (messages: IMessageEnum | IMessageEnum[], old?: boolean) => void;
+	replaceMessage: (message: IMessageEnum) => void;
+	updateMessageStatus: (messageId: string, status: MessageStatus) => void;
 };
 
 const initialContext: ChatContextType = {
@@ -17,6 +29,8 @@ const initialContext: ChatContextType = {
 	setUserId: () => void 0,
 	setChannelId: () => void 0,
 	setMessages: () => void 0,
+	replaceMessage: () => void 0,
+	updateMessageStatus: () => void 0,
 };
 
 const ChatContext = createContext<ChatContextType>(initialContext);
@@ -24,18 +38,26 @@ const ChatContext = createContext<ChatContextType>(initialContext);
 const ChatContextProvider = ({ children }: { children: React.ReactNode }) => {
 	const [userId, setUserId] = useState<UserId>(UserId.Joyse);
 	const [channelId, setChannelId] = useState<ChannelId>(ChannelId.General);
-	const [messages, setMessages] = useState<MessageEnum[]>([]);
+	const [messages, setMessages] = useState<IMessageEnum[]>([]);
 
-	const handleSetMessages = (messages: MessageEnum | MessageEnum[], old = false) => {
+	const handleSetMessages = (messages: IMessageEnum | IMessageEnum[], old = false) => {
 		if (Array.isArray(messages)) {
-			setMessages((prevMessages) =>
-				old ? [...messages, ...prevMessages] : [...prevMessages, ...messages]
-			);
+			setMessages((prev) => (old ? [...messages, ...prev] : [...prev, ...messages]));
 		} else {
-			setMessages((prevMessages) =>
-				old ? [messages, ...prevMessages] : [...prevMessages, messages]
-			);
+			setMessages((prev) => (old ? [messages, ...prev] : [...prev, messages]));
 		}
+	};
+
+	const replaceMessage = (message: IMessageEnum) => {
+		setMessages((prev) =>
+			prev.map((item) => (item.messageId === message.messageId ? message : item))
+		);
+	};
+
+	const updateMessageStatus = (messageId: string, status: MessageStatus) => {
+		setMessages((prev) =>
+			prev.map((item) => (item.messageId === messageId ? { ...item, status } : item))
+		);
 	};
 
 	return (
@@ -47,6 +69,8 @@ const ChatContextProvider = ({ children }: { children: React.ReactNode }) => {
 				setUserId,
 				setChannelId,
 				setMessages: handleSetMessages,
+				replaceMessage,
+				updateMessageStatus,
 			}}
 		>
 			{children}
@@ -64,4 +88,4 @@ const useChatContext = () => {
 	return context;
 };
 
-export { ChatContext, ChatContextProvider, useChatContext };
+export { MessageStatus, ChatContext, ChatContextProvider, useChatContext };
