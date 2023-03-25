@@ -1,5 +1,4 @@
 import { ChannelId, UserId } from '@/libs/api/generated/graphql';
-import { useCallback } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Select } from '../common';
 import { useChatContext } from './ChatContext';
@@ -12,15 +11,7 @@ const USER_OPTIONS = Object.values(UserId).map((userId) => ({
 const CHANNEL_OPTIONS = Object.values(ChannelId);
 
 const ChatSidebar = () => {
-	const { userId, channelId, setUserId, setChannelId, setMessages } = useChatContext();
-
-	const handleChannelClick = useCallback(
-		(channelId: ChannelId) => {
-			setChannelId(channelId);
-			setMessages([]);
-		},
-		[setChannelId, setMessages]
-	);
+	const { userId, channelId, setUserId, setChannelId } = useChatContext();
 
 	return (
 		<div className='flex flex-col w-[370px] h-full p-4 border-r'>
@@ -43,7 +34,7 @@ const ChatSidebar = () => {
 									['flex', 'items-center', 'gap-2', 'cursor-pointer', 'px-4', 'py-3', 'rounded-md'],
 									channelId === channel && 'bg-white'
 								)}
-								onClick={() => handleChannelClick(channel)}
+								onClick={() => setChannelId(channel)}
 							>
 								{channel} Channel
 							</div>

@@ -8,7 +8,7 @@ interface UseSendMessage
 	extends Required<
 		Pick<
 			ChatContextType,
-			'userId' | 'channelId' | 'setMessages' | 'replaceMessage' | 'updateMessageStatus'
+			'userId' | 'channelId' | 'handleSetMessages' | 'replaceMessage' | 'updateMessageStatus'
 		>
 	> {
 	textareaRef: React.RefObject<HTMLTextAreaElement>;
@@ -18,7 +18,7 @@ interface UseSendMessage
 const useSendMessage = ({
 	userId,
 	channelId,
-	setMessages,
+	handleSetMessages,
 	replaceMessage,
 	updateMessageStatus,
 	textareaRef,
@@ -40,7 +40,7 @@ const useSendMessage = ({
 			text: message,
 			status: MessageStatus.Sending,
 		};
-		setMessages(beforeMessage, true);
+		handleSetMessages(beforeMessage, true);
 
 		try {
 			await mutateAddMessage({
@@ -50,8 +50,6 @@ const useSendMessage = ({
 					userId,
 				},
 				onCompleted: ({ MessagePost }) => {
-					console.log(MessagePost);
-
 					if (!MessagePost) {
 						throw new Error('MessagePost is null');
 					}

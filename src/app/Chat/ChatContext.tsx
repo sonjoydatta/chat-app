@@ -17,7 +17,8 @@ export type ChatContextType = {
 	messages: IMessageEnum[];
 	setUserId: (userId: UserId) => void;
 	setChannelId: (channelId: ChannelId) => void;
-	setMessages: (messages: IMessageEnum | IMessageEnum[], old?: boolean) => void;
+	setMessages: (messages: IMessageEnum[], old?: boolean) => void;
+	handleSetMessages: (messages: IMessageEnum | IMessageEnum[], old?: boolean) => void;
 	replaceMessage: (messageId: string, message: IMessageEnum) => void;
 	updateMessageStatus: (messageId: string, status: MessageStatus) => void;
 };
@@ -29,6 +30,7 @@ const initialContext: ChatContextType = {
 	setUserId: () => void 0,
 	setChannelId: () => void 0,
 	setMessages: () => void 0,
+	handleSetMessages: () => void 0,
 	replaceMessage: () => void 0,
 	updateMessageStatus: () => void 0,
 };
@@ -66,7 +68,8 @@ const ChatContextProvider = ({ children }: { children: React.ReactNode }) => {
 				messages,
 				setUserId,
 				setChannelId,
-				setMessages: handleSetMessages,
+				setMessages,
+				handleSetMessages,
 				replaceMessage,
 				updateMessageStatus,
 			}}

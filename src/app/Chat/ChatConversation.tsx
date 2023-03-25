@@ -1,5 +1,5 @@
 import { useScroll } from '@/libs/hooks';
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useChatContext } from './ChatContext';
 import {
 	useGetLatestMessages,
@@ -10,12 +10,25 @@ import {
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
+const initialBtnState = { prev: true, next: true };
+
 const ChatConversation = () => {
-	const [isBtnVisible, setBtnVisible] = useState({ prev: true, next: true });
-	const { userId, channelId, messages, setMessages, replaceMessage, updateMessageStatus } =
-		useChatContext();
+	const [isBtnVisible, setBtnVisible] = useState(initialBtnState);
+	const {
+		userId,
+		channelId,
+		messages,
+		setMessages,
+		handleSetMessages,
+		replaceMessage,
+		updateMessageStatus,
+	} = useChatContext();
 	const { elementRef, scrollToBottom, scrollToTop } = useScroll();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
+		setBtnVisible(initialBtnState);
+	}, [channelId]);
 
 	// Fetch latest messages
 	const { loading } = useGetLatestMessages({
@@ -28,14 +41,14 @@ const ChatConversation = () => {
 	const handleReadMore = useGetMoreMessages({
 		channelId,
 		messages,
-		setMessages,
+		handleSetMessages,
 		setBtnVisible,
 		scrollToTop,
 		scrollToBottom,
 	});
 
 	// Hydrate textarea from local storage
-	const storageKey = `${userId}-${channelId}`;
+	const storageKey = useMemo(() => `${userId}-${channelId}`, [userId, channelId]);
 	const { handleAddToStorage, handleRemoveFromStorage } = useHydrateMessage({
 		storageKey,
 		textareaRef,
@@ -45,7 +58,7 @@ const ChatConversation = () => {
 	const { handleAddMessage, handleRetryMessage } = useSendMessage({
 		userId,
 		channelId,
-		setMessages,
+		handleSetMessages,
 		replaceMessage,
 		updateMessageStatus,
 		textareaRef,

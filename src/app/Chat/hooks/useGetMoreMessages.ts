@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { ChatContextType } from '../ChatContext';
 
 interface UseGetMoreMessages
-	extends Required<Pick<ChatContextType, 'messages' | 'channelId' | 'setMessages'>> {
+	extends Required<Pick<ChatContextType, 'messages' | 'channelId' | 'handleSetMessages'>> {
 	scrollToTop: () => void;
 	scrollToBottom: () => void;
 	setBtnVisible: React.Dispatch<
@@ -20,7 +20,7 @@ const useGetMoreMessages = ({
 	scrollToBottom,
 	channelId,
 	messages,
-	setMessages,
+	handleSetMessages,
 	setBtnVisible,
 }: UseGetMoreMessages) => {
 	const [fetchMore] = useLazyQuery(GET_MORE_MESSAGES);
@@ -53,7 +53,7 @@ const useGetMoreMessages = ({
 				variables,
 				onCompleted: ({ MessagesFetchMore }) => {
 					if (MessagesFetchMore && MessagesFetchMore?.length > 0) {
-						setMessages(MessagesFetchMore, old);
+						handleSetMessages(MessagesFetchMore, old);
 					} else if (old) {
 						setBtnVisible((prev) => ({ ...prev, prev: false }));
 					} else {
