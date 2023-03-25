@@ -1,14 +1,21 @@
 import { useScroll } from '@/libs/hooks';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useChatContext } from './ChatContext';
-import { useGetLatestMessages, useGetMoreMessages } from './hooks';
+import {
+	useGetLatestMessages,
+	useGetMoreMessages,
+	useHydrateMessage,
+	useSendMessage,
+} from './hooks';
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
 const ChatConversation = () => {
 	const [isBtnVisible, setBtnVisible] = useState({ prev: true, next: true });
-	const { userId, channelId, messages, setMessages } = useChatContext();
+	const { userId, channelId, messages, setMessages, replaceMessage, updateMessageStatus } =
+		useChatContext();
 	const { elementRef, scrollToBottom, scrollToTop } = useScroll();
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	// Fetch latest messages
 	const { loading } = useGetLatestMessages({
@@ -27,6 +34,24 @@ const ChatConversation = () => {
 		scrollToBottom,
 	});
 
+	// Hydrate textarea from local storage
+	const storageKey = `${userId}-${channelId}`;
+	const { handleAddToStorage, handleRemoveFromStorage } = useHydrateMessage({
+		storageKey,
+		textareaRef,
+	});
+
+	// Post a new message
+	const { handleAddMessage, handleRetryMessage } = useSendMessage({
+		userId,
+		channelId,
+		setMessages,
+		replaceMessage,
+		updateMessageStatus,
+		textareaRef,
+		handleRemoveFromStorage,
+	});
+
 	return (
 		<div className='flex flex-col w-full h-full'>
 			<div className='border-b p-4'>
@@ -39,15 +64,21 @@ const ChatConversation = () => {
 					visible={isBtnVisible.next}
 					onClick={() => handleReadMore(false)}
 				/>
-				{messages.map((message) => (
-					<MessageList.Item
-						key={message.messageId}
-						{...{
-							...message,
-							userType: message.userId === userId ? 'me' : 'other',
-						}}
-					/>
-				))}
+				{messages.map((message) => {
+					const userType = message.userId === userId ? 'me' : 'other';
+					const onRetry = () => handleRetryMessage(message);
+
+					return (
+						<MessageList.Item
+							key={message.messageId}
+							{...{
+								...message,
+								userType,
+								onRetry,
+							}}
+						/>
+					);
+				})}
 				<MessageList.LoadMore
 					next={false}
 					visible={isBtnVisible.prev}
@@ -55,7 +86,11 @@ const ChatConversation = () => {
 				/>
 			</MessageList>
 
-			<MessageInput />
+			<MessageInput
+				ref={textareaRef}
+				onTextChange={handleAddToStorage}
+				onAddMessage={handleAddMessage}
+			/>
 		</div>
 	);
 };
