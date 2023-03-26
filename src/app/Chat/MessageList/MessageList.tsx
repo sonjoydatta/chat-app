@@ -7,17 +7,22 @@ export interface MessageListProps {
 }
 
 const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
-	({ children, loading, empty }, ref) => (
-		<div ref={ref} className='flex flex-col flex-1 p-4 overflow-y-auto'>
-			<div className='flex flex-col-reverse gap-4'>
-				{loading && <p className='text-center'>Loading...</p>}
+	({ children, loading, empty }, ref) => {
+		const isNotLoadingAndEmpty = !loading && empty;
+		const isNotLoadingAndNotEmpty = !loading && !empty;
 
-				{!loading && empty && <p className='text-center'>No messages</p>}
+		return (
+			<div ref={ref} className='flex flex-col flex-1 p-4 overflow-y-auto'>
+				<div className='flex flex-col-reverse gap-4'>
+					{loading && <p className='text-center'>Loading...</p>}
 
-				{!loading && !empty && children}
+					{isNotLoadingAndEmpty && <p className='text-center'>No messages</p>}
+
+					{isNotLoadingAndNotEmpty && children}
+				</div>
 			</div>
-		</div>
-	)
+		);
+	}
 );
 
 export default MessageList;
